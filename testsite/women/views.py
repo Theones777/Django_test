@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from women.models import *
 
@@ -36,8 +36,15 @@ def login(request):  # HttpRequest
     return HttpResponse('Log in')
 
 
-def show_post(request, post_id):  # HttpRequest
-    return HttpResponse(f'Page with id = {post_id}')
+def show_post(request, post_slug):  # HttpRequest
+    post = get_object_or_404(Women, slug=post_slug)
+
+    context = {'post': post,
+               'menu': menu,
+               'title': post.title,
+               'cat_selected': post.cat_id}
+
+    return render(request, 'women/post.html', context=context)
 
 
 def show_category(request, cat_id):  # HttpRequest
