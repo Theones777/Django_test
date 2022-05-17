@@ -28,14 +28,11 @@ def about(request):  # HttpRequest
 
 def addpage(request):  # HttpRequest
     if request.method == 'POST':
-        form = AddFormPost(request.POST)
+        form = AddFormPost(request.POST, request.FILES)
         if form.is_valid():
             # print(form.cleaned_data)
-            try:
-                Women.objects.create(**form.cleaned_data)
-                return redirect('home')
-            except:
-                form.add_error(None, 'Post add error')
+            form.save()   # Women.objects.create(**form.cleaned_data)
+            return redirect('home')
     else:
         form = AddFormPost()
     return render(request, 'women/addpage.html',
