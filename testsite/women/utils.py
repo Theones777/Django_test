@@ -4,8 +4,7 @@ from women.models import *
 
 menu = [{'title': 'About site', 'url_name': 'about'},
         {'title': 'Add page', 'url_name': 'add_page'},
-        {'title': 'Back answer', 'url_name': 'contact'},
-        {'title': 'Login', 'url_name': 'login'}]
+        {'title': 'Back answer', 'url_name': 'contact'}]
 
 
 class DataMixin:
