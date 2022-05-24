@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from women.forms import *
@@ -73,14 +73,6 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 #         form = AddFormPost()
 #     return render(request, 'women/addpage.html',
 #                   {'form': form, 'menu': menu, 'title': "Dobavlenie stat'i"})
-
-
-def contact(request):  # HttpRequest
-    return HttpResponse('Contacts')
-
-
-# def login(request):  # HttpRequest
-#     return HttpResponse('Log in')
 
 
 class ShowPost(DataMixin, DetailView):
@@ -173,3 +165,18 @@ class LoginUser(DataMixin, LoginView):
 
     def get_success_url(self):
         return reverse_lazy('home')
+
+
+class ContactFormView(DataMixin, FormView):
+    form_class = ContactForm
+    template_name = 'women/contact.html'
+    success_url = reverse_lazy('home')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title='Back answer')
+        return context | c_def
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return redirect('home')
