@@ -1,5 +1,7 @@
+from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.views import LoginView
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseNotFound, Http404
@@ -77,8 +79,8 @@ def contact(request):  # HttpRequest
     return HttpResponse('Contacts')
 
 
-def login(request):  # HttpRequest
-    return HttpResponse('Log in')
+# def login(request):  # HttpRequest
+#     return HttpResponse('Log in')
 
 
 class ShowPost(DataMixin, DetailView):
@@ -138,6 +140,11 @@ def pageNotFound(request, exception):  # HttpRequest
     return HttpResponseNotFound(f'<h1>Error_404</h1>')
 
 
+def logout_user(request):
+    logout(request)
+    return redirect('login')
+
+
 class RegisterUser(DataMixin, CreateView):
     form_class = RegisterUserForm
     template_name = 'women/register.html'
@@ -147,3 +154,21 @@ class RegisterUser(DataMixin, CreateView):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(title='Registration')
         return context | c_def
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect('home')
+
+
+class LoginUser(DataMixin, LoginView):
+    form_class = LoginUserForm
+    template_name = 'women/login.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title='Autorisation')
+        return context | c_def
+
+    def get_success_url(self):
+        return reverse_lazy('home')
